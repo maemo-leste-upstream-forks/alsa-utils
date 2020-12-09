@@ -1,0 +1,40 @@
+#!/usr/bin/make -f
+DEB_HOST_MULTIARCH ?= $(shell dpkg-architecture -qDEB_HOST_MULTIARCH)
+export DEB_BUILD_MAINT_OPTIONS = hardening=+all
+
+%:
+	dh $@
+
+override_dh_auto_configure:
+	dh_auto_configure -- \
+			--with-asound-state-dir=/var/lib/alsa \
+			--with-alsactl-home-dir=/run/alsa \
+			--with-alsactl-runtime-dir=/run/alsa/runtime \
+			--disable-alsaconf
+
+override_dh_auto_test:
+	# 'container-test' and 'mapper-test' for axfer take a long time.
+	# # They are designed to check robustness of internal
+	# implementation of axfer and do not necessarily need to run in
+	# a process of deb packaging. Let's suppress them.
+	dh_auto_test -- TESTS=''
+
+override_dh_auto_install:
+	dh_auto_install --destdir=debian/tmp
+
+# Kill *.la files, and make sure we install everything else
+override_dh_install:
+	mv debian/tmp/usr/sbin/alsa-info.sh debian/tmp/usr/sbin/alsa-info
+	mkdir debian/tmp/usr/share/man/man8
+	mv debian/tmp/usr/share/man/man1/alsa-info.sh.1 debian/tmp/usr/share/man/man8/alsa-info.8
+	mv debian/tmp/usr/sbin/alsabat-test.sh debian/tmp/usr/sbin/alsabat-test
+	dh_install -Xusr/share/man/fr
+
+override_dh_installchangelogs:
+	dh_installchangelogs -XChangeLog
+
+override_dh_missing:
+	dh_missing --fail-missing
+
+override_dh_installinit:
+	dh_installinit --no-start

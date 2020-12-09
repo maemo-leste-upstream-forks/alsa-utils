@@ -1,0 +1,27 @@
+Author: Elimar Riesebieter <riesebie@lxtec.de>
+Description: Add Documentation key to systemd service files.
+
+Index: alsa-utils/alsactl/alsa-restore.service.in
+===================================================================
+--- alsa-utils.orig/alsactl/alsa-restore.service.in
++++ alsa-utils/alsactl/alsa-restore.service.in
+@@ -5,6 +5,7 @@
+ 
+ [Unit]
+ Description=Save/Restore Sound Card State
++Documentation=man:alsactl(1)
+ ConditionPathExists=!@daemonswitch@
+ ConditionPathExistsGlob=/dev/snd/control*
+ ConditionPathExists=@asoundrcfile@
+Index: alsa-utils/alsactl/alsa-state.service.in
+===================================================================
+--- alsa-utils.orig/alsactl/alsa-state.service.in
++++ alsa-utils/alsactl/alsa-state.service.in
+@@ -5,6 +5,7 @@
+ 
+ [Unit]
+ Description=Manage Sound Card State (restore and store)
++Documentation=man:alsactl(1)
+ ConditionPathExists=@daemonswitch@
+ 
+ [Service]

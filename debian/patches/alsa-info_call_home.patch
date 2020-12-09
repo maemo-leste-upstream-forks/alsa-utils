@@ -1,0 +1,29 @@
+Description: Only check for updates when invoked using --update
+Author: Jordi Mallach <jordi@debian.org>
+Bug-Debian: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=962073
+Forwarded: no
+
+Index: alsa-utils/alsa-info/alsa-info.sh
+===================================================================
+--- alsa-utils.orig/alsa-info/alsa-info.sh
++++ alsa-utils/alsa-info/alsa-info.sh
+@@ -637,11 +637,6 @@ if [ -s "$TEMPDIR/alsa-usbmixer.tmp" ];
+ 	echo "" >> $FILE
+ fi
+ 
+-#If no command line options are specified, then run as though --with-all was specified
+-if [ -z "$1" ]; then
+-	update
+-fi
+-
+ fi # proceed
+ 
+ #loop through command line arguments, until none are left.
+@@ -650,7 +645,6 @@ if [ -n "$1" ]; then
+ 	do
+ 	case "$1" in
+ 		--pastebin)
+-		        update
+ 			;;
+ 		--update)
+ 			update

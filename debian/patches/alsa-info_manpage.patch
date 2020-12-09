@@ -1,0 +1,41 @@
+Description: drop .sh suffix from all alsa-info references and move to section 8.
+Author: Jordi Mallach <jordi@debian.org>
+Bug-Debian: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=921595
+Upstreamed: no
+
+Index: alsa-utils/alsa-info/alsa-info.sh.1
+===================================================================
+--- alsa-utils.orig/alsa-info/alsa-info.sh.1
++++ alsa-utils/alsa-info/alsa-info.sh.1
+@@ -1,12 +1,12 @@
+-.TH ALSA-INFO.SH 1 "13 January 2016"
++.TH ALSA-INFO.SH 8 "13 January 2016"
+ .SH NAME
+-alsa-info.sh \- command\-line utility to gather information about
++alsa-info \- command\-line utility to gather information about
+ the ALSA subsystem
+ .SH SYNOPSIS
+-\fBalsa-info.sh\fP [\fIoptions\fP]
++\fBalsa-info\fP [\fIoptions\fP]
+ 
+ .SH DESCRIPTION
+-\fBalsa-info.sh\fP is a command\-line utility gathering information
++\fBalsa-info\fP is a command\-line utility gathering information
+ about the ALSA subsystem. It is used mostly for debugging purposes.
+ 
+ .SH OPTIONS
+@@ -48,7 +48,7 @@ Print information about authors.
+ .SH EXAMPLES
+ 
+ .TP
+-\fBalsa-info.sh \-\-no-upload\fR
++\fBalsa-info \-\-no-upload\fR
+ Will gather all information and show the output file.
+ 
+ .SH SEE ALSO
+@@ -59,4 +59,4 @@ alsactl(1)
+ \fP
+ 
+ .SH AUTHOR
+-\fBalsa-info.sh\fP was created by the ALSA team, see \fI\-\-about\fP .
++\fBalsa-info\fP was created by the ALSA team, see \fI\-\-about\fP .

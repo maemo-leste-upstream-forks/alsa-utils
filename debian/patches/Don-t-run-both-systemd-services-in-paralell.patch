@@ -1,0 +1,29 @@
+From 9bd7b7242218a20171c0e69454f67783a6840cf8 Mon Sep 17 00:00:00 2001
+From: Elimar Riesebieter <riesebie@lxtec.de>
+Date: Sun, 14 Apr 2019 05:16:18 +0200
+Subject: [PATCH] Don't run both systemd services in paralell
+
+    Last release started both alsa-restore and alsa-state services concurrently.
+    Therefore removed Fix-alsactl-to-restore-config.patch and introduced
+    Don-t-run-both-systemd-services-in-paralell.patch. Thanks to Michael Biebl
+    for the hint.
+---
+ alsactl/alsa-restore.service.in | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/alsactl/alsa-restore.service.in b/alsactl/alsa-restore.service.in
+index 38ffea7..74b9290 100644
+--- a/alsactl/alsa-restore.service.in
++++ b/alsactl/alsa-restore.service.in
+@@ -8,7 +8,7 @@ Description=Save/Restore Sound Card State
+ Documentation=man:alsactl(1)
+ ConditionPathExists=!@daemonswitch@
+ ConditionPathExistsGlob=/dev/snd/control*
+-ConditionPathExists=@asoundrcfile@
++After=alsa-state.service
+ 
+ [Service]
+ Type=oneshot
+-- 
+2.20.1
+

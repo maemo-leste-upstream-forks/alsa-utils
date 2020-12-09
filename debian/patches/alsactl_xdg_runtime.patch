@@ -1,0 +1,70 @@
+Author: Antonio Russo <antonio.e.russo@gmail.com>
+Description: add new configure switch to set alsactl's runtimedir.
+
+Index: alsa-utils/alsactl/90-alsa-restore.rules.in
+===================================================================
+--- alsa-utils.orig/alsactl/90-alsa-restore.rules.in
++++ alsa-utils/alsactl/90-alsa-restore.rules.in
+@@ -2,7 +2,7 @@ ACTION=="add", SUBSYSTEM=="sound", KERNE
+ GOTO="alsa_restore_end"
+ 
+ LABEL="alsa_restore_go"
+-TEST!="@daemonswitch@", RUN+="@sbindir@/alsactl -E HOME=@alsactlhome@ restore $attr{device/number}"
+-TEST=="@daemonswitch@", RUN+="@sbindir@/alsactl -E HOME=@alsactlhome@ nrestore $attr{device/number}"
++TEST!="@daemonswitch@", RUN+="@sbindir@/alsactl -E HOME=@alsactlhome@ -E XDG_RUNTIME_DIR=@alsactlruntime@ restore $attr{device/number}"
++TEST=="@daemonswitch@", RUN+="@sbindir@/alsactl -E HOME=@alsactlhome@ -E XDG_RUNTIME_DIR=@alsactlruntime@ nrestore $attr{device/number}"
+ 
+ LABEL="alsa_restore_end"
+Index: alsa-utils/alsactl/Makefile.am
+===================================================================
+--- alsa-utils.orig/alsactl/Makefile.am
++++ alsa-utils/alsactl/Makefile.am
+@@ -43,6 +43,7 @@ edit = \
+ 	$(SED) -r -e 's,@sbindir\@,$(sbindir),g' \
+ 		  -e 's,@mydatadir\@,$(mydatadir),g' \
+ 		  -e 's,@alsactlhome\@,$(ALSACTL_HOME_DIR),g' \
++		  -e 's,@alsactlruntime\@,$(ALSACTL_RUNTIME_DIR),g' \
+ 		  -e 's,@daemonswitch\@,$(ALSACTL_DAEMONSWITCH),g' \
+ 		  -e 's,@asoundrcfile\@,$(ASOUND_STATE_DIR)/asound.state,g' \
+ 							< $< > $@ || rm $@
+Index: alsa-utils/alsactl/alsa-restore.service.in
+===================================================================
+--- alsa-utils.orig/alsactl/alsa-restore.service.in
++++ alsa-utils/alsactl/alsa-restore.service.in
+@@ -12,5 +12,5 @@ ConditionPathExists=@asoundrcfile@
+ [Service]
+ Type=oneshot
+ RemainAfterExit=true
+-ExecStart=-@sbindir@/alsactl -E HOME=@alsactlhome@ restore
+-ExecStop=-@sbindir@/alsactl -E HOME=@alsactlhome@ store
++ExecStart=-@sbindir@/alsactl -E HOME=@alsactlhome@ -E XDG_RUNTIME_DIR=@alsactlruntime@ restore
++ExecStop=-@sbindir@/alsactl -E HOME=@alsactlhome@ -E XDG_RUNTIME_DIR=@alsactlruntime@ store
+Index: alsa-utils/alsactl/alsa-state.service.in
+===================================================================
+--- alsa-utils.orig/alsactl/alsa-state.service.in
++++ alsa-utils/alsactl/alsa-state.service.in
+@@ -9,5 +9,5 @@ ConditionPathExists=@daemonswitch@
+ 
+ [Service]
+ Type=simple
+-ExecStart=-@sbindir@/alsactl -E HOME=@alsactlhome@ -s -n 19 -c rdaemon
+-ExecStop=-@sbindir@/alsactl -E HOME=@alsactlhome@ -s kill save_and_quit
++ExecStart=-@sbindir@/alsactl -E HOME=@alsactlhome@ -E XDG_RUNTIME_DIR=@alsactlruntime@ -s -n 19 -c rdaemon
++ExecStop=-@sbindir@/alsactl -E HOME=@alsactlhome@ -E XDG_RUNTIME_DIR=@alsactlruntime@ -s kill save_and_quit
+Index: alsa-utils/configure.ac
+===================================================================
+--- alsa-utils.orig/configure.ac
++++ alsa-utils/configure.ac
+@@ -426,6 +426,12 @@ AC_ARG_WITH([alsactl-pidfile-dir],
+         [ALSACTL_PIDFILE_DIR="/var/run"])
+ AC_SUBST(ALSACTL_PIDFILE_DIR)
+ 
++AC_ARG_WITH([alsactl-runtime-dir],
++        AS_HELP_STRING([--with-alsactl-runtime-dir=DIR], [Directory to use as runtimedir for alsactl]),
++        [ALSACTL_RUNTIME_DIR="$withval"],
++        [ALSACTL_RUNTIME_DIR="/var/run/alsa/runtime"])
++AC_SUBST(ALSACTL_RUNTIME_DIR)
++
+ AC_ARG_WITH([alsactl-home-dir],
+         AS_HELP_STRING([--with-alsactl-home-dir=DIR], [Directory to use as homedir for alsactl]),
+         [ALSACTL_HOME_DIR="$withval"],
